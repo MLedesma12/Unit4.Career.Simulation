@@ -5,10 +5,10 @@ const client = new pg.Client(
 );
 
 const uuid = require("uuid");
-const {
-  createUser,
-  fetchUsers,
-} = require("../../37a_career_simulation/server/db");
+// const {
+//   createUser,
+//   fetchUsers,
+// } = require("../../37a_career_simulation/server/db");
 const createTables = async () => {
   await client.connect();
   const SQL = `
@@ -78,16 +78,78 @@ const fetchRestaurants = async () => {
   return response.rows;
 };
 
+const createReview = async ({ restaurant_id, user_id, review_text, date }) => {
+  const SQL = `
+        INSERT INTO reviews(id, restaurant_id, user_id, review_text, date) VALUES($1, $2, $3, $4, $5) RETURNING *
+      `;
+  const response = await client.query(SQL, [
+    uuid.v4(),
+    restaurant_id,
+    user_id,
+    review_text,
+    date,
+  ]);
+  return response.rows[0];
+};
+
+const fetchReviews = async () => {
+  const SQL = `
+    SELECT * FROM reviews;
+    `;
+  const reviews = await client.query(SQL);
+  return reviews.rows[0];
+};
+
+const deleteReview = async ({ id, review_text }) => {
+  console.log(id, review_text);
+  const SQL = `
+            DELETE FROM reviews
+            WHERE id = $1 AND review_text=$2
+        `;
+  await client.query(SQL, [id, review_text]);
+};
+
+const createComment = async ({ user_id, review_id, comment_text }) => {
+  const SQL = `
+        INSERT INTO reservations(id, user_id, review_id, comment_text) VALUES($1, $2, $3, $4) RETURNING *
+      `;
+  const response = await client.query(SQL, [
+    uuid.v4(),
+    user_id,
+    review_id,
+    comment_text,
+  ]);
+  return response.rows[0];
+};
+
+const fetchComments = async () => {
+  const SQL = `
+    SELECT * FROM comments;
+    `;
+  const comments = await client.query(SQL);
+  return comments.rows[0];
+};
+
+const deleteComment = async ({ id, comment_text }) => {
+  console.log(id, comment_text);
+  const SQL = `
+          DELETE FROM comments
+          WHERE id = $1 AND comment_text=$2
+      `;
+  await client.query(SQL, [id, comment_text]);
+};
+
 module.exports = {
   client,
   createTables,
-  //   createUser,
-  //   createRestaurant,
-  //   fetchUsers,
-  //   fetchRestaurants,
-  //   createReview,
-  //   fetchReviews,
-  //   createComment,
-  //   fetchComments,
-  //   destroyComment,
+  createUser,
+  createRestaurant,
+  fetchUsers,
+  fetchRestaurants,
+  createReview,
+  fetchReviews,
+  deleteReview,
+  createComment,
+  fetchComments,
+  deleteComment,
 };

@@ -1,15 +1,16 @@
 const {
   client,
   createTables,
-  //   createUser,
-  //   createRestaurant,
-  //   fetchUsers,
-  //   fetchRestaurants,
-  //   createReview,
-  //   fetchReviews,
-  //   createComment,
-  //   fetchComments,
-  //   destroyComment,
+  createUser,
+  createRestaurant,
+  fetchUsers,
+  fetchRestaurants,
+  createReview,
+  fetchReviews,
+  deleteReview,
+  createComment,
+  fetchComments,
+  deleteComment,
 } = require("./db");
 
 const express = require("express");
@@ -24,16 +25,16 @@ const init = async () => {
 
   // const [mario, noel, sammie, aviana, bizzybees, logans, twinpeaks] =
   //   await Promise.all([
-  //     createCustomer({ name: "mario" }),
-  //     createCustomer({ name: "noel" }),
-  //     createCustomer({ name: "sammie" }),
-  //     createCustomer({ name: "aviana" }),
+  //     createUser({ name: "mario" }),
+  //     createUser({ name: "noel" }),
+  //     createUser({ name: "sammie" }),
+  //     createUser({ name: "aviana" }),
   //     createRestaurant({ name: "bizzybees" }),
   //     createRestaurant({ name: "logans" }),
   //     createRestaurant({ name: "twinpeaks" }),
   //   ]);
 
-  // console.log(await fetchCustomers());
+  // console.log(await fetchUsers());
   // console.log(await fetchRestaurants());
 
   // const [reservation, reservation2] = await Promise.all([
