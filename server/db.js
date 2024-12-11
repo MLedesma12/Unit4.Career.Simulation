@@ -44,7 +44,7 @@ const createTables = async () => {
   await client.query(SQL);
 };
 
-const createUser = async (name) => {
+const createUser = async ({ name }) => {
   const SQL = `
         INSERT INTO users(id, name) VALUES($1, $2) RETURNING *
       `;
@@ -52,7 +52,7 @@ const createUser = async (name) => {
   return response.rows[0];
 };
 
-const createRestaurant = async (name) => {
+const createRestaurant = async ({ name }) => {
   const SQL = `
         INSERT INTO restaurants(id, name) VALUES($1, $2) RETURNING *
       `;

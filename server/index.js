@@ -19,49 +19,70 @@ const app = express();
 app.use(express.json());
 app.use(require("morgan")("dev"));
 
+app.get("/api/restaurants", async (req, res, next) => {
+  try {
+    res.send(await fetchRestaurants());
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+app.get("/api/restaurants/:id", async (req, res, next) => {
+  try {
+    const SQL = `
+            SELECT * FROM restaurants
+            WHERE id=$1;`;
+
+    const response = await client.query(SQL, [req.params.id]);
+    res.send(response.rows[0]);
+  } catch (err) {
+    console.error("Couldnt find restaurant: ", err);
+  }
+});
+
 const init = async () => {
   await createTables();
   console.log("created tables");
 
-  // const [mario, noel, sammie, aviana, bizzybees, logans, twinpeaks] =
-  //   await Promise.all([
-  //     createUser({ name: "mario" }),
-  //     createUser({ name: "noel" }),
-  //     createUser({ name: "sammie" }),
-  //     createUser({ name: "aviana" }),
-  //     createRestaurant({ name: "bizzybees" }),
-  //     createRestaurant({ name: "logans" }),
-  //     createRestaurant({ name: "twinpeaks" }),
-  //   ]);
+  const [mario, noel, sammie, aviana, bizzybees, logans, texasroadhouse] =
+    await Promise.all([
+      createUser({ name: "mario" }),
+      createUser({ name: "noel" }),
+      createUser({ name: "sammie" }),
+      createUser({ name: "aviana" }),
+      createRestaurant({ name: "bizzybees" }),
+      createRestaurant({ name: "logans" }),
+      createRestaurant({ name: "texasroadhouse" }),
+    ]);
 
-  // console.log(await fetchUsers());
-  // console.log(await fetchRestaurants());
+  console.log(await fetchUsers());
+  console.log(await fetchRestaurants());
 
-  // const [reservation, reservation2] = await Promise.all([
-  //   createReservation({
-  //     customer_id: mario.id,
-  //     restaurant_id: logans.id,
-  //     party_count: 2,
-  //     date: "02/14/2024",
-  //   }),
-  //   createReservation({
-  //     customer_id: mario.id,
-  //     restaurant_id: twinpeaks.id,
-  //     party_count: 4,
-  //     date: "02/28/2024",
-  //   }),
-  // ]);
+  const [review, review2] = await Promise.all([
+    createReview({
+      user_id: mario.id,
+      restaurant_id: logans.id,
+      review_text: "Fantastic steaks!",
+      date: "02/14/2024",
+    }),
+    createReview({
+      user_id: mario.id,
+      restaurant_id: texasroadhouse.id,
+      review_text: "The rolls are addicting!",
+      date: "02/28/2024",
+    }),
+  ]);
 
-  // const allReservations = async () => {
-  //   let reservations = await fetchReservations();
-  //   console.log("Reservations: ", reservations);
-  // };
-  // allReservations();
+  const allReviews = async () => {
+    let reviews = await fetchReviews();
+    console.log("Reviews: ", reviews);
+  };
+  allReviews();
 
-  // await destroyReservation({
-  //   id: reservation.id,
-  //   customer_id: reservation.customer_id,
-  // });
+  await deleteReview({
+    id: review.id,
+    user_id: review.user_id,
+  });
 
   const port = process.env.PORT || 3000;
   app.listen(port, () => {
